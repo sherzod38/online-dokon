@@ -8,16 +8,21 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
 
+type User = {
+  id: string;
+  email: string;
+};
+
 export default function SuccessPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
       try {
         const { data } = await supabase.auth.getUser();
-        setUser(data.user);
+        setUser(data.user as User | null);
         
         if (!data.user) {
           // Redirect to login if not authenticated
@@ -63,7 +68,7 @@ export default function SuccessPage() {
               Tabriklaymiz! Sizning buyurtmangiz muvaffaqiyatli amalga oshirildi. Tez orada mahsulotlaringiz yetkazib beriladi!
             </p>
             <p className="text-gray-500">
-              Buyurtma haqida batafsil ma'lumot email orqali yuboriladi.
+              Buyurtma haqida batafsil ma&apos;lumot email orqali yuboriladi.
             </p>
           </CardContent>
           <CardFooter className="flex justify-center">

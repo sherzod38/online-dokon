@@ -10,20 +10,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CartItem } from '@/types';
 
+type User = {
+  id: string;
+  email: string;
+};
+
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, addToCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // Calculate total price
-  const totalPrice = items.reduce((total: number, item: CartItem) => total + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   // Check if user is logged in
   useEffect(() => {
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+      setUser(data.user as User | null);
     };
     
     checkUser();
@@ -40,7 +45,7 @@ export default function CartPage() {
       }
       
       // Here you would typically process the payment
-      // For now, we'll just redirect to success page
+      // For now, we&apos;ll just redirect to success page
       router.push('/success');
     } catch (error) {
       console.error('Checkout error:', error);
@@ -49,16 +54,16 @@ export default function CartPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (cart.length === 0) {
     return (
       <main className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Savatcha</h1>
         <Card>
           <CardContent className="py-8">
             <div className="text-center">
-              <p className="text-xl mb-4">Savatchangiz bo'sh</p>
+              <p className="text-xl mb-4">Savatchangiz bo&apos;sh</p>
               <Button asChild>
-                <Link href="/">Mahsulotlarni ko'rish</Link>
+                <Link href="/">Mahsulotlarni ko&apos;rish</Link>
               </Button>
             </div>
           </CardContent>
@@ -73,7 +78,7 @@ export default function CartPage() {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          {items.map((item: CartItem) => (
+          {cart.map((item) => (
             <Card key={item.id} className="mb-4">
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
@@ -92,19 +97,19 @@ export default function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
+                        onClick={() => addToCart(item)}
                         className="h-8 w-8 p-0"
                       >
-                        -
+                        +
                       </Button>
                       <span className="mx-2 w-8 text-center">{item.quantity}</span>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => removeFromCart(item.id)}
                         className="h-8 w-8 p-0"
                       >
-                        +
+                        -
                       </Button>
                       <Button
                         variant="ghost"
@@ -112,7 +117,7 @@ export default function CartPage() {
                         onClick={() => removeFromCart(item.id)}
                         className="ml-auto text-red-500 hover:text-red-700"
                       >
-                        O'chirish
+                        O&apos;chirish
                       </Button>
                     </div>
                   </div>
@@ -132,7 +137,7 @@ export default function CartPage() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-between mb-2">
-                <span>Mahsulotlar ({items.reduce((total: number, item: CartItem) => total + item.quantity, 0)})</span>
+                <span>Mahsulotlar ({cart.reduce((total, item) => total + item.quantity, 0)})</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t">

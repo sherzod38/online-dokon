@@ -4,40 +4,48 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Product } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+
+type FormData = {
+  name: string;
+  price: string;
+  image_url: string;
+  description: string;
+};
 
 export default function AdminPage() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    price: '',
+    image_url: '',
+    description: '',
+  });
 
-  // Check Supabase connection on component mount
+  // Check Supabase connection
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const { data, error } = await supabase.from('products').select('count').limit(1);
-        if (error) {
-          console.error('Supabase connection error:', error);
-          setConnectionStatus('error');
-          setError(`Supabase bilan bog'lanishda xatolik: ${error.message}`);
-        } else {
-          setConnectionStatus('connected');
-        }
-      } catch (err) {
-        console.error('Unexpected error checking connection:', err);
+        const { error } = await supabase
+          .from('products')
+          .select('count')
+          .limit(1);
+        
+        if (error) throw error;
+        setConnectionStatus('connected');
+      } catch (error) {
+        console.error('Supabase connection error:', error);
         setConnectionStatus('error');
-        setError('Kutilmagan xatolik yuz berdi. Iltimos, qayta urinib koring.');
+        setError('Supabase bilan bog&apos;lanishda xatolik yuz berdi. Iltimos, qayta urinib koring.');
       }
     };
-
+    
     checkConnection();
   }, []);
 
@@ -48,134 +56,148 @@ export default function AdminPage() {
 
     try {
       // Validate price
-      const priceValue = parseFloat(price);
-      if (isNaN(priceValue) || priceValue <= 0) {
-        throw new Error("Narx noto'g'ri formatda. Iltimos, musbat son kiriting.");
+      const price = parseFloat(formData.price);
+      if (isNaN(price) || price <= 0) {
+        throw new Error('Narx musbat son bo&apos;lishi kerak');
       }
 
       // Validate image URL
       try {
-        new URL(imageUrl);
-      } catch (e) {
-        throw new Error("Rasm URL noto'g'ri formatda. Iltimos, to'g'ri URL kiriting.");
+        new URL(formData.image_url);
+      } catch {
+        throw new Error('Noto&apos;g&apos;ri rasm URL manzili');
       }
 
-      console.log('Attempting to insert product:', { name, price: priceValue, image_url: imageUrl, description });
+      console.log('Adding product:', formData);
+      const { error } = await supabase
+        .from('products')
+        .insert([
+          {
+            name: formData.name,
+            price: price,
+            image_url: formData.image_url,
+            description: formData.description,
+          },
+        ]);
+
+      if (error) throw error;
+      console.log('Product added successfully');
       
-      const { data, error } = await supabase.from('products').insert([
-        {
-          name,
-          price: priceValue,
-          image_url: imageUrl,
-          description,
-        },
-      ]).select();
-
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(`Xatolik: ${error.message}`);
-      }
-
-      console.log('Product inserted successfully:', data);
-
       // Reset form
-      setName('');
-      setPrice('');
-      setImageUrl('');
-      setDescription('');
-
-      alert("Mahsulot muvaffaqiyatli qo'shildi!");
+      setFormData({
+        name: '',
+        price: '',
+        image_url: '',
+        description: '',
+      });
+      
+      // Show success message
+      alert('Mahsulot muvaffaqiyatli qo&apos;shildi!');
     } catch (error) {
       console.error('Error adding product:', error);
-      setError(error instanceof Error ? error.message : "Mahsulot qo'shishda xatolik yuz berdi.");
+      setError(error instanceof Error ? error.message : 'Kutilmagan xatolik yuz berdi. Iltimos, qayta urinib koring.');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <main className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-      
-      {connectionStatus === 'checking' && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-          Supabase bilan bog'lanish tekshirilmoqda...
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  if (connectionStatus === 'checking') {
+    return (
+      <main className="container mx-auto py-8">
+        <div className="text-center">
+          <p>Supabase bilan bog&apos;lanish tekshirilmoqda...</p>
         </div>
-      )}
-      
-      {connectionStatus === 'error' && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p className="font-bold">Supabase bilan bog'lanishda muammo!</p>
-          <p>Iltimos, quyidagilarni tekshiring:</p>
-          <ul className="list-disc pl-5 mt-2">
-            <li>Supabase loyihangiz faol ekanligini</li>
-            <li>products jadvali mavjudligini</li>
-            <li>RLS (Row Level Security) sozlamalarini</li>
+      </main>
+    );
+  }
+
+  if (connectionStatus === 'error') {
+    return (
+      <main className="container mx-auto py-8">
+        <div className="text-center text-red-500">
+          <p>{error}</p>
+          <p className="mt-4">Iltimos, quyidagilarni tekshiring:</p>
+          <ul className="list-disc list-inside mt-2">
+            <li>Supabase loyihangiz faol</li>
+            <li>products jadvali mavjud</li>
+            <li>RLS sozlamalari to&apos;g&apos;ri</li>
           </ul>
         </div>
-      )}
+      </main>
+    );
+  }
+
+  return (
+    <main className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
       
       <Card>
         <CardHeader>
-          <CardTitle>Yangi mahsulot qo'shish</CardTitle>
+          <CardTitle>Yangi mahsulot qo&apos;shish</CardTitle>
         </CardHeader>
         <CardContent>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Mahsulot nomi
-              </label>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="name">Mahsulot nomi</Label>
               <Input
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 required
               />
             </div>
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium mb-1">
-                Narxi
-              </label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="price">Narxi</Label>
               <Input
                 id="price"
+                name="price"
                 type="number"
                 step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                value={formData.price}
+                onChange={handleChange}
                 required
               />
             </div>
-            <div>
-              <label htmlFor="imageUrl" className="block text-sm font-medium mb-1">
-                Rasm URL
-              </label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="image_url">Rasm URL manzili</Label>
               <Input
-                id="imageUrl"
+                id="image_url"
+                name="image_url"
                 type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
+                value={formData.image_url}
+                onChange={handleChange}
                 required
-                placeholder="https://picsum.photos/800/600"
+                placeholder="https://example.com/image.jpg"
               />
             </div>
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium mb-1">
-                Tavsif
-              </label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description">Tavsif</Label>
               <Textarea
                 id="description"
-                value={description}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
                 required
               />
             </div>
-            <Button type="submit" disabled={loading || connectionStatus === 'error'}>
-              {loading ? "Yuklanmoqda..." : "Mahsulot qo'shish"}
+            
+            <Button type="submit" disabled={loading}>
+              {loading ? "Yuklanmoqda..." : "Mahsulot qo&apos;shish"}
             </Button>
           </form>
         </CardContent>
