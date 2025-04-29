@@ -60,9 +60,9 @@ export default function CartPage() {
         <Card>
           <CardContent className="py-8">
             <div className="text-center">
-              <p className="text-xl mb-4">Savatchangiz bo'sh</p>
+              <p className="text-xl mb-4">Savatchangiz bo&apos;sh</p>
               <Button asChild>
-                <Link href="/">Mahsulotlarni ko'rish</Link>
+                <Link href="/">Mahsulotlarni ko&apos;rish</Link>
               </Button>
             </div>
           </CardContent>
@@ -116,7 +116,7 @@ export default function CartPage() {
                         onClick={() => removeFromCart(item.id)}
                         className="ml-auto text-red-500 hover:text-red-700"
                       >
-                        O'chirish
+                        O&apos;chirish
                       </Button>
                     </div>
                   </div>

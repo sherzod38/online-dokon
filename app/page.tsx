@@ -24,9 +24,7 @@ export default async function Home() {
     return (
       <main className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Mahsulotlar</h1>
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-          Mahsulotlar topilmadi. Iltimos, admin panelidan mahsulot qo'shing.
-        </div>
+        <p className="text-gray-500">Mahsulotlar topilmadi. Iltimos, mahsulot qo&apos;shing.</p>
       </main>
     );
   }

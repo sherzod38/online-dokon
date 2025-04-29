@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Product } from '@/types';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { notFound } from 'next/navigation';
 
