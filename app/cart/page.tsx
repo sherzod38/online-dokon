@@ -16,7 +16,7 @@ type User = {
 
 export default function CartPage() {
   const router = useRouter();
-  const { cart, removeFromCart, addToCart } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCart();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
@@ -44,7 +44,7 @@ export default function CartPage() {
       }
       
       // Here you would typically process the payment
-      // For now, we&apos;ll just redirect to success page
+      // For now, we'll just redirect to success page
       router.push('/success');
     } catch (error) {
       console.error('Checkout error:', error);
@@ -60,9 +60,9 @@ export default function CartPage() {
         <Card>
           <CardContent className="py-8">
             <div className="text-center">
-              <p className="text-xl mb-4">Savatchangiz bo&apos;sh</p>
+              <p className="text-xl mb-4">Savatchangiz bo'sh</p>
               <Button asChild>
-                <Link href="/">Mahsulotlarni ko&apos;rish</Link>
+                <Link href="/">Mahsulotlarni ko'rish</Link>
               </Button>
             </div>
           </CardContent>
@@ -96,7 +96,7 @@ export default function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => addToCart(item)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="h-8 w-8 p-0"
                       >
                         +
@@ -105,7 +105,7 @@ export default function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="h-8 w-8 p-0"
                       >
                         -
@@ -116,7 +116,7 @@ export default function CartPage() {
                         onClick={() => removeFromCart(item.id)}
                         className="ml-auto text-red-500 hover:text-red-700"
                       >
-                        O&apos;chirish
+                        O'chirish
                       </Button>
                     </div>
                   </div>
