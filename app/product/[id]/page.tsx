@@ -3,7 +3,6 @@ import { supabase } from '@/lib/supabase';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { notFound } from 'next/navigation';
 
-// Sahifa komponenti uchun to'g'ri type va strukturasi
 export default async function ProductPage({
   params,
 }: {
