@@ -3,17 +3,16 @@ import { supabase } from '@/lib/supabase';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { notFound } from 'next/navigation';
 
-// Next.js 15 page props type
-type PageProps = {
+// Sahifa komponenti uchun to'g'ri type va strukturasi
+export default async function ProductPage({
+  params,
+}: {
   params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-export default async function ProductPage(props: PageProps) {
+}) {
   const { data: product } = await supabase
     .from('products')
     .select('*')
-    .eq('id', props.params.id)
+    .eq('id', params.id)
     .single();
 
   if (!product) {
