@@ -112,7 +112,7 @@ export default function LoginPage() {
                 >
                   {loading ? "Yuklanmoqda..." : "Ro&apos;yxatdan o&apos;tish"}
                 </Button>
-              </div>
+          </div>
             </form>
           </CardContent>
         </Card>

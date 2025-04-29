@@ -3,13 +3,14 @@ import { supabase } from '@/lib/supabase';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { notFound } from 'next/navigation';
 
-type Props = {
+interface PageProps {
   params: {
     id: string;
   };
-};
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params }: PageProps) {
   const { data: product } = await supabase
     .from('products')
     .select('*')

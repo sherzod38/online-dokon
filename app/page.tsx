@@ -10,7 +10,7 @@ export default async function Home() {
 
   if (error) {
     console.error('Error fetching products:', error);
-    return (
+  return (
       <main className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Mahsulotlar</h1>
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -36,7 +36,7 @@ export default async function Home() {
         {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-      </div>
+    </div>
     </main>
   );
 }
