@@ -3,18 +3,17 @@ import { supabase } from '@/lib/supabase';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { notFound } from 'next/navigation';
 
-type Props = {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
+// Next.js 15 page props type
+type PageProps = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
-export default async function ProductPage({
-  params,
-}: Props) {
+export default async function ProductPage(props: PageProps) {
   const { data: product } = await supabase
     .from('products')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', props.params.id)
     .single();
 
   if (!product) {
