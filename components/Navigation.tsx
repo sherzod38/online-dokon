@@ -60,7 +60,7 @@ export default function Navigation() {
               className="block px-4 py-2 hover:bg-gray-100 rounded"
               onClick={() => setIsMenuOpen(false)}
             >
-              Bog&apos;lanish
+              Ro&apos;yxatdan o&apos;tish
             </Link>
             <Link 
               href="/login" 
