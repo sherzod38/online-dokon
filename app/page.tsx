@@ -1,42 +1,73 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ProductCard } from '@/components/ProductCard';
 import { Product } from '@/types';
 
-export default async function Home() {
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (error) {
-    console.error('Error fetching products:', error);
-  return (
-      <main className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8">Mahsulotlar</h1>
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Mahsulotlarni yuklashda xatolik yuz berdi: {error.message}
-        </div>
-      </main>
-    );
-  }
+  useEffect(() => {
+    // Real-time subscription
+    const channel = supabase
+      .channel('products_channel')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'products' 
+        }, 
+        (payload) => {
+          // Yangi ma'lumotlarni olish
+          fetchProducts();
+        }
+      )
+      .subscribe();
 
-  if (!products || products.length === 0) {
+    // Dastlabki ma'lumotlarni yuklash
+    fetchProducts();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Mahsulotlarni yuklashda xatolik:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <main className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8">Mahsulotlar</h1>
-        <p className="text-gray-500">Mahsulotlar topilmadi. Iltimos, mahsulot qo&apos;shing.</p>
+      <main className="container mx-auto py-8 px-4">
+        <div className="text-center">Yuklanmoqda...</div>
       </main>
     );
   }
 
   return (
-    <main className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Mahsulotlar</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product: Product) => (
+    <main className="container mx-auto py-8 px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-    </div>
+      </div>
     </main>
   );
 }
