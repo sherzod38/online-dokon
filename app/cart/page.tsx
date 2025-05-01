@@ -16,12 +16,9 @@ type User = {
 
 export default function CartPage() {
   const router = useRouter();
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { items, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-
-  // Calculate total price
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   // Check if user is logged in
   useEffect(() => {
@@ -53,7 +50,7 @@ export default function CartPage() {
     }
   };
 
-  if (cart.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <main className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Savatcha</h1>
@@ -61,8 +58,9 @@ export default function CartPage() {
           <CardContent className="py-8">
             <div className="text-center">
               <p className="text-xl mb-4">Savatchangiz bo&apos;sh</p>
-              <Button asChild>
-                <Link href="/">Mahsulotlarni ko&apos;rish</Link>
+              <Button asChild className=" cursor-pointer hover:bg-green-500 hover:text-white transition-colors" 
+              size="lg">
+                <Link href="/">Mahsulotlarni ko\'rish</Link>
               </Button>
             </div>
           </CardContent>
@@ -77,7 +75,7 @@ export default function CartPage() {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          {cart.map((item) => (
+          {items.map((item) => (
             <Card key={item.id} className="mb-4">
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
@@ -105,7 +103,7 @@ export default function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
                         className="h-8 w-8 p-0"
                       >
                         -
@@ -136,7 +134,7 @@ export default function CartPage() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-between mb-2">
-                <span>Mahsulotlar ({cart.reduce((total, item) => total + item.quantity, 0)})</span>
+                <span>Mahsulotlar ({totalItems})</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t">
@@ -146,7 +144,11 @@ export default function CartPage() {
             </CardContent>
             <CardFooter>
               <Button 
-                className="w-full" 
+                className={`w-full cursor-pointer transition-all duration-300 ${
+                  loading 
+                    ? "bg-red-500 text-white" 
+                    : "hover:bg-green-500 hover:text-white"
+                }`}
                 size="lg"
                 onClick={handleCheckout}
                 disabled={loading}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,22 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  // Foydalanuvchi autentifikatsiyasini tekshirish
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      setUser(user);
+    };
+    
+    checkUser();
+  }, []);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     price: '',
@@ -53,21 +70,24 @@ export default function AdminPage() {
     setError(null);
 
     try {
-      // Validate price
-      const price = parseFloat(formData.price);
-      if (isNaN(price) || price <= 0) {
-        throw new Error('Narx musbat son bo&apos;lishi kerak');
+      if (!user) {
+        throw new Error('Foydalanuvchi tizimga kirmagan');
       }
 
-      // Validate image URL
+      // Narxni tekshirish
+      const price = parseFloat(formData.price);
+      if (isNaN(price) || price <= 0) {
+        throw new Error('Narx musbat son bo\'lishi kerak');
+      }
+
+      // Rasm URL manzilini tekshirish
       try {
         new URL(formData.image_url);
       } catch {
-        throw new Error('Noto&apos;g&apos;ri rasm URL manzili');
+        throw new Error('Noto\'g\'ri rasm URL manzili');
       }
 
-      console.log('Adding product:', formData);
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .insert([
           {
@@ -75,25 +95,27 @@ export default function AdminPage() {
             price: price,
             image_url: formData.image_url,
             description: formData.description,
+            user_id: user.id // Foydalanuvchi ID'sini saqlash
           },
-        ]);
+        ])
+        .select();
 
       if (error) throw error;
-      console.log('Product added successfully');
+
+      // Muvaffaqiyatli qo'shildi
+      alert('Mahsulot muvaffaqiyatli qo\'shildi!');
       
-      // Reset form
+      // Formani tozalash
       setFormData({
         name: '',
         price: '',
         image_url: '',
         description: '',
       });
-      
-      // Show success message
-      alert('Mahsulot muvaffaqiyatli qo&apos;shildi!');
+
     } catch (error) {
-      console.error('Error adding product:', error);
-      setError(error instanceof Error ? error.message : 'Kutilmagan xatolik yuz berdi. Iltimos, qayta urinib koring.');
+      console.error('Mahsulot qo\'shishda xatolik:', error);
+      setError(error instanceof Error ? error.message : 'Kutilmagan xatolik yuz berdi');
     } finally {
       setLoading(false);
     }

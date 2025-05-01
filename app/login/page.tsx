@@ -21,16 +21,52 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      router.push('/success');
+      router.push('/admin'); // admin panelga yo'naltirish
     } catch (error) {
       console.error('Login error:', error);
-      setError('Login yoki parol noto&apos;g&apos;ri');
+      setError('Login yoki parol xato');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+'use client';
+
+// ... existing code ...
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      router.push('/admin'); // admin panelga yo'naltirish
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Login yoki parol xato');
     } finally {
       setLoading(false);
     }
@@ -48,10 +84,20 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-      router.push('/success');
+      router.push('/'); // asosiy sahifaga yo'naltirish
     } catch (error) {
       console.error('Signup error:', error);
-      setError('Ro&apos;yxatdan o&apos;tishda xatolik yuz berdi');
+      setError('Ro\'yxatdan o\'tishda xatolik yuz berdi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+// ... existing code ...      if (error) throw error;
+      router.push('/'); // asosiy sahifaga yo'naltirish
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('Ro\'yxatdan o\'tishda xatolik yuz berdi');
     } finally {
       setLoading(false);
     }

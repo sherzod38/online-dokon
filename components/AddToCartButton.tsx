@@ -16,16 +16,23 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   const handleClick = () => {
     addToCart(product);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    // Qizil rangga o'tish
+    setTimeout(() => {
+      setAdded(false);
+    }, 500);
   };
 
   return (
     <Button
       onClick={handleClick}
-      className="w-full"
+      className={`w-full cursor-pointer transition-all duration-300 ${
+        added 
+          ? "bg-red-500" 
+          : "hover:bg-green-500 hover:text-white"
+      }`}
       variant={added ? "secondary" : "default"}
     >
-      {added ? "Savatga qo&apos;shildi" : "Savatga qo&apos;shish"}
+      {added ? "Savatga qo'shildi" : "Savatga qo'shish"}
     </Button>
   );
 }
