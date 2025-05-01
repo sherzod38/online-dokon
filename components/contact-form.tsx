@@ -28,12 +28,19 @@ export function ContactForm() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Xabar yuborishda xatolik');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Xabar yuborishda xatolik');
+      }
       
       setFormData({ name: '', email: '', message: '' });
       alert('Xabaringiz muvaffaqiyatli yuborildi!');
-    } catch (error) {
-      alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
+      }
     } finally {
       setLoading(false);
     }
