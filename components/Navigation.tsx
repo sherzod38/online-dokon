@@ -34,7 +34,7 @@ export default function Navigation() {
               </span>
             </Link>
             <Link href="/contact" className="px-4 py-2 hover:text-blue-600">
-              Bog&apos;lanish
+              Mijozimiz bo&apos;ling
             </Link>
             <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
               Kirish / Ro&apos;yxatdan o&apos;tish
