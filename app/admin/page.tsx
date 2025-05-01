@@ -54,23 +54,36 @@ export default function AdminPage() {
 
       const price = parseFloat(formData.price);
       if (isNaN(price)) {
-        throw new Error("Noto&apos;g&apos;ri narx formati");
+        throw new Error("Noto'g'ri narx formati");
       }
 
-      const { error } = await supabase
-        .from('products')
-        .insert([
-          {
-            name: formData.name,
-            price: price,
-            image_url: formData.image_url,
-            description: formData.description,
-            user_id: user.id
-          },
-        ]);
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          price: price,
+          image_url: formData.image_url,
+          description: formData.description
+        }),
+      });
 
-      if (error) throw error;
-      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Mahsulot qo'shishda xatolik");
+      }
+
+      // Formani tozalash
+      setFormData({
+        name: '',
+        price: '',
+        image_url: '',
+        description: ''
+      });
+
+      alert("Mahsulot muvaffaqiyatli qo'shildi!");
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {
