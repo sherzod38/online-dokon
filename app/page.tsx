@@ -9,31 +9,6 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Real-time subscription
-    const channel = supabase
-      .channel('products_channel')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'products' 
-        }, 
-        (payload) => {
-          // Yangi ma'lumotlarni olish
-          fetchProducts();
-        }
-      )
-      .subscribe();
-
-    // Dastlabki ma'lumotlarni yuklash
-    fetchProducts();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
@@ -52,6 +27,31 @@ export default function HomePage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Real-time subscription
+    const channel = supabase
+      .channel('products_channel')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'products' 
+        }, 
+        () => {
+          // Yangi ma'lumotlarni olish
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    // Dastlabki ma'lumotlarni yuklash
+    fetchProducts();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   if (loading) {
     return (
