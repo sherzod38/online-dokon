@@ -49,7 +49,7 @@ export function ContactForm() {
   return (
     <Card className="max-w-2xl mx-auto w-full px-4 sm:px-0">
       <CardHeader>
-        <CardTitle className="text-center text-2xl sm:text-3xl">Biz bilan bog&apos;laning</CardTitle>
+        <CardTitle className="text-center text-2xl sm:text-3xl">Ro&apos;yxatdan o&apos;ting</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
