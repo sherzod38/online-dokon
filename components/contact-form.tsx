@@ -47,41 +47,48 @@ export function ContactForm() {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-2xl mx-auto w-full px-4 sm:px-0">
       <CardHeader>
-        <CardTitle>Biz bilan bog&apos;laning</CardTitle>
+        <CardTitle className="text-center text-2xl sm:text-3xl">Biz bilan bog&apos;laning</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Ismingiz</Label>
+            <Label htmlFor="name" className="text-base sm:text-lg">Ismingiz</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
+              className="p-2 sm:p-3 text-base sm:text-lg"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-base sm:text-lg">Email</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
+              className="p-2 sm:p-3 text-base sm:text-lg"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="message">Xabar</Label>
+            <Label htmlFor="message" className="text-base sm:text-lg">Xabar</Label>
             <Textarea
               id="message"
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
+              className="p-2 sm:p-3 text-base sm:text-lg min-h-[100px]"
             />
           </div>
-          <Button type="submit" disabled={loading}>
+          <Button 
+            type="submit" 
+            disabled={loading}
+            className="w-full py-2 sm:py-3 text-base sm:text-lg"
+          >
             {loading ? "Yuklanmoqda..." : "Yuborish"}
           </Button>
         </form>

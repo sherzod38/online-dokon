@@ -99,24 +99,27 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="container mx-auto py-8">
-      <Card className="max-w-2xl mx-auto">
+    <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-2xl mx-auto w-full">
         <CardHeader>
-          <CardTitle>Yangi mahsulot qo&apos;shish</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl text-center">
+            Yangi mahsulot qo&apos;shish
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nomi</Label>
+              <Label htmlFor="name" className="text-base sm:text-lg">Nomi</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                className="p-2 sm:p-3"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="price">Narxi</Label>
+              <Label htmlFor="price" className="text-base sm:text-lg">Narxi</Label>
               <Input
                 id="price"
                 type="number"
@@ -124,28 +127,35 @@ export default function AdminPage() {
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
+                className="p-2 sm:p-3"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image_url">Rasm URL</Label>
+              <Label htmlFor="image_url" className="text-base sm:text-lg">Rasm URL</Label>
               <Input
                 id="image_url"
                 type="url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                 required
+                className="p-2 sm:p-3"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Tavsif</Label>
+              <Label htmlFor="description" className="text-base sm:text-lg">Tavsif</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
+                className="p-2 sm:p-3 min-h-[100px]"
               />
             </div>
-            <Button type="submit" disabled={loading}>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full py-2 sm:py-3 text-base sm:text-lg"
+            >
               {loading ? "Yuklanmoqda..." : "Qo&apos;shish"}
             </Button>
           </form>
