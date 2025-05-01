@@ -58,9 +58,11 @@ export default function CartPage() {
           <CardContent className="py-8">
             <div className="text-center">
               <p className="text-xl mb-4">Savatchangiz bo&apos;sh</p>
-              <Button asChild className=" cursor-pointer hover:bg-green-500 hover:text-white transition-colors" 
-              size="lg">
-                <Link href="/">Mahsulotlarni ko\'rish</Link>
+              <Button 
+                asChild 
+                className="cursor-pointer hover:bg-green-500 hover:text-white transition-colors"
+              >
+                <Link href="/">Mahsulotlarni ko&apos;rish</Link>
               </Button>
             </div>
           </CardContent>

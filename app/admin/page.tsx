@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type FormData = {
   name: string;
@@ -17,25 +17,9 @@ type FormData = {
 };
 
 export default function AdminPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
-  const [user, setUser] = useState<any>(null);
   const router = useRouter();
-
-  // Foydalanuvchi autentifikatsiyasini tekshirish
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-      setUser(user);
-    };
-    
-    checkUser();
-  }, []);
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     price: '',
@@ -43,51 +27,37 @@ export default function AdminPage() {
     description: '',
   });
 
-  // Check Supabase connection
   useEffect(() => {
-    const checkConnection = async () => {
-      try {
-        const { error } = await supabase
-          .from('products')
-          .select('count')
-          .limit(1);
-        
-        if (error) throw error;
-        setConnectionStatus('connected');
-      } catch (error) {
-        console.error('Supabase connection error:', error);
-        setConnectionStatus('error');
-        setError('Supabase bilan bog&apos;lanishda xatolik yuz berdi. Iltimos, qayta urinib koring.');
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
       }
+      setUser({
+        id: user.id,
+        email: user.email || ''
+      });
     };
     
-    checkConnection();
-  }, []);
+    checkUser();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       if (!user) {
-        throw new Error('Foydalanuvchi tizimga kirmagan');
+        throw new Error("Foydalanuvchi tizimga kirmagan");
       }
 
-      // Narxni tekshirish
       const price = parseFloat(formData.price);
-      if (isNaN(price) || price <= 0) {
-        throw new Error('Narx musbat son bo\'lishi kerak');
+      if (isNaN(price)) {
+        throw new Error("Noto&apos;g&apos;ri narx formati");
       }
 
-      // Rasm URL manzilini tekshirish
-      try {
-        new URL(formData.image_url);
-      } catch {
-        throw new Error('Noto\'g\'ri rasm URL manzili');
-      }
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('products')
         .insert([
           {
@@ -95,129 +65,75 @@ export default function AdminPage() {
             price: price,
             image_url: formData.image_url,
             description: formData.description,
-            user_id: user.id // Foydalanuvchi ID'sini saqlash
+            user_id: user.id
           },
-        ])
-        .select();
+        ]);
 
       if (error) throw error;
-
-      // Muvaffaqiyatli qo'shildi
-      alert('Mahsulot muvaffaqiyatli qo\'shildi!');
       
-      // Formani tozalash
-      setFormData({
-        name: '',
-        price: '',
-        image_url: '',
-        description: '',
-      });
-
-    } catch (error) {
-      console.error('Mahsulot qo\'shishda xatolik:', error);
-      setError(error instanceof Error ? error.message : 'Kutilmagan xatolik yuz berdi');
+      router.push('/');
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  if (connectionStatus === 'checking') {
-    return (
-      <main className="container mx-auto py-8">
-        <div className="text-center">
-          <p>Supabase bilan bog&apos;lanish tekshirilmoqda...</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (connectionStatus === 'error') {
-    return (
-      <main className="container mx-auto py-8">
-        <div className="text-center text-red-500">
-          <p>{error}</p>
-          <p className="mt-4">Iltimos, quyidagilarni tekshiring:</p>
-          <ul className="list-disc list-inside mt-2">
-            <li>Supabase loyihangiz faol</li>
-            <li>products jadvali mavjud</li>
-            <li>RLS sozlamalari to&apos;g&apos;ri</li>
-          </ul>
-        </div>
-      </main>
-    );
+  if (!user) {
+    return null;
   }
 
   return (
     <main className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
-      
-      <Card>
+      <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Yangi mahsulot qo&apos;shish</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-            
             <div className="space-y-2">
-              <Label htmlFor="name">Mahsulot nomi</Label>
+              <Label htmlFor="name">Nomi</Label>
               <Input
                 id="name"
-                name="name"
                 value={formData.name}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="price">Narxi</Label>
               <Input
                 id="price"
-                name="price"
                 type="number"
                 step="0.01"
                 value={formData.price}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
               />
             </div>
-            
             <div className="space-y-2">
-              <Label htmlFor="image_url">Rasm URL manzili</Label>
+              <Label htmlFor="image_url">Rasm URL</Label>
               <Input
                 id="image_url"
-                name="image_url"
                 type="url"
                 value={formData.image_url}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                 required
-                placeholder="https://example.com/image.jpg"
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="description">Tavsif</Label>
               <Textarea
                 id="description"
-                name="description"
                 value={formData.description}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
               />
             </div>
-            
             <Button type="submit" disabled={loading}>
-              {loading ? "Yuklanmoqda..." : "Mahsulot qo&apos;shish"}
+              {loading ? "Yuklanmoqda..." : "Qo&apos;shish"}
             </Button>
           </form>
         </CardContent>

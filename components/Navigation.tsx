@@ -11,25 +11,23 @@ export default function Navigation() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-xl font-bold">
-            Online Do'kon
+            Online Do&apos;kon
           </Link>
           <div className="flex gap-4">
             <Link 
               href="/cart" 
-              className="px-4 py-2 hover:text-blue-600 relative flex items-center"
+              className="px-4 py-2 hover:text-blue-600 relative"
             >
-              <span className="mr-2">Savatcha</span>
-              {totalItems > 0 && (
-                <span className="bg-red-500 text-white rounded-full px-2 py-1 text-xs min-w-[20px] h-[20px] flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
+              <span>Savatcha</span>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full min-w-[20px] h-[20px] flex items-center justify-center text-xs">
+                {totalItems || 0}
+              </span>
             </Link>
             <Link 
               href="/login" 
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Kirish / Ro'yxatdan o'tish
+              Kirish / Ro&apos;yxatdan o&apos;tish
             </Link>
           </div>
         </div>
