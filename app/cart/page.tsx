@@ -34,17 +34,20 @@ export default function CartPage() {
     setLoading(true);
     
     try {
-      if (!user) {
-        // Redirect to login page if user is not logged in
-        router.push('/login');
+      // Local storage dan foydalanuvchi ma'lumotlarini tekshirish
+      const userData = localStorage.getItem('userData');
+      
+      if (!userData) {
+        // Agar foydalanuvchi ro'yxatdan o'tmagan bo'lsa contact sahifasiga yo'naltirish
+        router.push('/contact');
         return;
       }
       
-      // Here you would typically process the payment
-      // For now, we'll just redirect to success page
+      // Ro'yxatdan o'tgan foydalanuvchi uchun success sahifasiga yo'naltirish
       router.push('/success');
     } catch (error) {
       console.error('Checkout error:', error);
+      alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +15,7 @@ export function ContactForm() {
     email: '',
     message: ''
   });
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +35,16 @@ export function ContactForm() {
         throw new Error(errorData.error || 'Xabar yuborishda xatolik');
       }
       
+      // Local storage ga foydalanuvchi ma'lumotlarini saqlash
+      localStorage.setItem('userData', JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        isAuthenticated: true
+      }));
+
       setFormData({ name: '', email: '', message: '' });
-      alert('Xabaringiz muvaffaqiyatli yuborildi!');
+      alert('Muvaffaqiyatli ro\'yxatdan o\'tdingiz!');
+      router.push('/success');
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message);

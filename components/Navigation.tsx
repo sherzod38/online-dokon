@@ -36,9 +36,9 @@ export default function Navigation() {
             <Link href="/contact" className="px-4 py-2 hover:text-blue-600">
               Mijozimiz bo&apos;ling
             </Link>
-            <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            {/* <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
               Kirish / Ro&apos;yxatdan o&apos;tish
-            </Link>
+            </Link> */}
           </div>
         </div>
 
@@ -62,13 +62,13 @@ export default function Navigation() {
             >
               Ro&apos;yxatdan o&apos;tish
             </Link>
-            <Link 
+            {/* <Link 
               href="/login" 
               className="block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               onClick={() => setIsMenuOpen(false)}
             >
               Kirish / Ro&apos;yxatdan o&apos;tish
-            </Link>
+            </Link> */}
           </div>
         )}
       </div>
