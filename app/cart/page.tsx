@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, totalItems, totalPrice, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -26,7 +26,8 @@ export default function CartPage() {
         return;
       }
       
-      // Ro'yxatdan o'tgan foydalanuvchi uchun success sahifasiga yo'naltirish
+      // Ro'yxatdan o'tgan foydalanuvchi uchun
+      clearCart(); // Savatchani tozalash
       router.push('/success');
     } catch (error) {
       console.error('Checkout error:', error);
