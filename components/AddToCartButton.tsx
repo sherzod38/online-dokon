@@ -32,7 +32,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     setAdded(true);
     setTimeout(() => {
       setAdded(false);
-      router.push('/success');
+      router.push('/cart');
     }, 500);
   };
 
@@ -46,7 +46,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
       }`}
       variant={added ? "secondary" : "default"}
     >
-      {added ? "Savatga qo'shildi" : "Sotib olish"}
+      {added ? "Savatga qo'shildi" : "Savatga qo'shish"}
     </Button>
   );
 }
