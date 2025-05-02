@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
@@ -14,26 +14,13 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Local storage dan foydalanuvchi ma'lumotlarini tekshirish
-    const userData = localStorage.getItem('userData');
-    setIsAuthenticated(!!userData);
-  }, []);
 
   const handleClick = () => {
-    if (!isAuthenticated) {
-      router.push('/');
-      return;
-    }
-
     addToCart(product);
     setAdded(true);
     setTimeout(() => {
       setAdded(false);
-      router.push('/');
-    }, 500);
+    }, 1500);
   };
 
   return (
