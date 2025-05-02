@@ -24,7 +24,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      router.push('/contact');
+      router.push('/');
       return;
     }
 
