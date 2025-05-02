@@ -5,30 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 import Link from 'next/link';
-
-type User = {
-  id: string;
-  email: string;
-};
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  // Check if user is logged in
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user as User | null);
-    };
-    
-    checkUser();
-  }, []);
 
   const handleCheckout = async () => {
     setLoading(true);
