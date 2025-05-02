@@ -32,7 +32,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     setAdded(true);
     setTimeout(() => {
       setAdded(false);
-      router.push('/cart');
+      router.push('/');
     }, 500);
   };
 
