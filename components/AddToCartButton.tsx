@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { Product } from "@/types";
@@ -11,7 +10,6 @@ type AddToCartButtonProps = {
 };
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
-  const router = useRouter();
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
